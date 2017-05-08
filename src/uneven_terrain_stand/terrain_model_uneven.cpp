@@ -273,12 +273,6 @@ bool TerrainModelUneven::update3DData(State& s) const
 	  }
 	}
 
-	// TODO maybe future work
-	// TODO smooth each point with surroundings bc sensitive to noise
-	// TODO too much normals turn out to be 0
-	// TODO is normal pointing up or down?
-	// TODO future work TODO could select ZMP to choose best support
-
 	return result;
 }
 }
