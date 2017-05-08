@@ -1,8 +1,0 @@
-# TerrainModelPlugin
-terrain_model_uneven:
-  type_class_package: multi_contact_point_estimator
-  type_class: vigir_footstep_planning::TerrainModelUneven
-  base_class_package: vigir_footstep_planning_plugins
-  base_class: vigir_footstep_planning::TerrainModelPlugin
-
-
