@@ -98,15 +98,14 @@ include_directories(include ${catkin_INCLUDE_DIRS} ${boost_INCLUDE_DIRS})
 
 ## Specify additional locations of header files
 set(HEADERS
-  include/${PROJECT_NAME}/uneven_terrain_stand/convex_hull_stand.h
-  include/${PROJECT_NAME}/uneven_terrain_stand/model_stand.h
-  include/${PROJECT_NAME}/uneven_terrain_stand/terrain_model_uneven.h
-    include/${PROJECT_NAME}/uneven_terrain_stand/data_points.h
+	include/${PROJECT_NAME}/uneven_terrain_stand/convex_hull_stand.h
+	include/${PROJECT_NAME}/uneven_terrain_stand/model_stand.h
+	include/${PROJECT_NAME}/uneven_terrain_stand/terrain_model_uneven.h
+	include/${PROJECT_NAME}/uneven_terrain_stand/data_points.h
 	include/${PROJECT_NAME}/uneven_terrain_stand/my_tensorflow_model_run_lib.h
 	include/${PROJECT_NAME}/uneven_terrain_stand/foot_form.h
 	include/${PROJECT_NAME}/uneven_terrain_stand/foot_state_uneven.h
 	include/${PROJECT_NAME}/uneven_terrain_stand/uneven_terrain_stand.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/stand_predict.h
 	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/libqhull_r.h
 	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/geom_r.h
 	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/io_r.h
@@ -148,13 +147,12 @@ set(HEADERS
 )
 
 set(SOURCES
-  src/uneven_terrain_stand/convex_hull_stand.cpp
-  src/uneven_terrain_stand/model_stand.cpp
-  src/uneven_terrain_stand/terrain_model_uneven.cpp
-  src/uneven_terrain_stand/data_points.cpp
+	src/uneven_terrain_stand/convex_hull_stand.cpp
+	src/uneven_terrain_stand/model_stand.cpp
+	src/uneven_terrain_stand/terrain_model_uneven.cpp
+	src/uneven_terrain_stand/data_points.cpp
 	src/uneven_terrain_stand/foot_form.cpp
 	src/uneven_terrain_stand/uneven_terrain_stand.cpp
-	src/uneven_terrain_stand/stand_predict.cpp
 	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/global_r.c
 	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/stat_r.c
 	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/geom2_r.c
