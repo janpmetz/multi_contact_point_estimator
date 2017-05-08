@@ -10,8 +10,8 @@
 
 using namespace orgQhull;
 
-UnevenTerrainStand::UnevenTerrainStand(vigir_footstep_planning::State s, geometry_msgs::Vector3 foot_size, vigir_terrain_classifier::HeightGridMap::Ptr height_grid_map, FootForm ff, MyPredict* const &myPred)
-: foot_size(foot_size), height_grid_map(height_grid_map), ff(ff), myPred(myPred)
+UnevenTerrainStand::UnevenTerrainStand(vigir_footstep_planning::State s, geometry_msgs::Vector3 foot_size, vigir_terrain_classifier::HeightGridMap::Ptr height_grid_map, FootForm ff, MultiContactPointModel* const &model)
+: foot_size(foot_size), height_grid_map(height_grid_map), ff(ff), model(model)
 {
 	x = s.getX();
 	y = s.getY();

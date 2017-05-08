@@ -18,7 +18,7 @@ class ModelStand {
 public:
 	ModelStand();
 	virtual ~ModelStand();
-	FootStateUneven tensorflow_predict(std::vector<vec3> const &points, vec3 zmpv, int dataWidth, int dataHeight, MyPredict* const &myPred, double yaw,vigir_terrain_classifier::HeightGridMap::Ptr height_grid_map, FootForm ff);
+	FootStateUneven tensorflow_predict(std::vector<vec3> const &points, vec3 zmpv, int dataWidth, int dataHeight, MultiContactPointModel* const &model, double yaw,vigir_terrain_classifier::HeightGridMap::Ptr height_grid_map, FootForm ff);
 private:
 	vec3 getTriangleNormal(vec3 a, vec3 b, vec3 c);
 	double triangle_area_3d(vec3 a, vec3 b, vec3 c);

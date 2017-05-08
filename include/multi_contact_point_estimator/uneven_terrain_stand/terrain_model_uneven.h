@@ -41,7 +41,7 @@
 
 #include <vigir_terrain_classifier/terrain_model.h>
 
-#include "my_tensorflow_model_run_lib.h"
+#include "multi_contact_point_model_run_lib.h"
 
 
 namespace vigir_footstep_planning
@@ -102,8 +102,8 @@ protected:
   // robot params
   geometry_msgs::Vector3 foot_size;
 
-  // ml model for foot on terrain
-  MyPredict* myPred;
+  // Learned model of the contact points on the ground
+  MultiContactPointModel* model;
 };
 }
 

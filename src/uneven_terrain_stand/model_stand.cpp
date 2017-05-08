@@ -33,7 +33,7 @@ std::vector<size_t> indices_of_max_elements(std::vector<T> const& values) {
     return indices;
 }
 
-FootStateUneven ModelStand::tensorflow_predict(std::vector<vec3> const &points, vec3 zmpv, int dataWidth, int dataHeight, MyPredict* const &myPred, double yaw, vigir_terrain_classifier::HeightGridMap::Ptr height_grid_map, FootForm ff){
+FootStateUneven ModelStand::tensorflow_predict(std::vector<vec3> const &points, vec3 zmpv, int dataWidth, int dataHeight, MultiContactPointModel* const &model, double yaw, vigir_terrain_classifier::HeightGridMap::Ptr height_grid_map, FootForm ff){
 
 	FootStateUneven stand = FootStateUneven();
 
@@ -68,7 +68,7 @@ FootStateUneven ModelStand::tensorflow_predict(std::vector<vec3> const &points, 
 	// PREDICT CONTACT POINTS
 	// ##################################################
 	// flat predict matrix dataWith x dataHeight containing most likely contact points
-	std::vector<float> pred = myPred->modelPrediction(pointsFlat, zmpvec, dataWidth, dataHeight);
+	std::vector<float> pred = model->make_prediction(pointsFlat, zmpvec, dataWidth, dataHeight);
 	// ##################################################
 
 	// get 3 most likely predicted contact points

@@ -15,13 +15,13 @@
 
 #include "foot_form.h"
 #include "foot_state_uneven.h"
-#include "my_tensorflow_model_run_lib.h"
+#include "multi_contact_point_model_run_lib.h"
 #include "src/libqhullcpp/Qhull.h"
 
 
 class UnevenTerrainStand {
 public:
-	UnevenTerrainStand(vigir_footstep_planning::State s, geometry_msgs::Vector3 foot_size, vigir_terrain_classifier::HeightGridMap::Ptr height_grid_map, FootForm ff, MyPredict* const &myPred);
+	UnevenTerrainStand(vigir_footstep_planning::State s, geometry_msgs::Vector3 foot_size, vigir_terrain_classifier::HeightGridMap::Ptr height_grid_map, FootForm ff, MultiContactPointModel* const &model);
 	virtual ~UnevenTerrainStand();
 	FootStateUneven getStand();
 
@@ -35,7 +35,7 @@ private:
 	int sampling_steps_x = 10;
 	int sampling_steps_y = 10;
 	vigir_terrain_classifier::HeightGridMap::Ptr height_grid_map;
-	MyPredict* const &myPred;
+	MultiContactPointModel* const &model;
 
 	// methods
 	void get_points_under_foot(std::vector<orgQhull::vec3> &points);

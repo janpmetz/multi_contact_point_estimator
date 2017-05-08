@@ -25,8 +25,8 @@ TerrainModelUneven::TerrainModelUneven(const std::string& name)
 
 	if (ros::param::get("frozen_model_path", frozen_model_path)){
 		ROS_INFO_STREAM("Loading frozen model from: " << frozen_model_path);
-		myPred = new MyPredict();
-		myPred->init(frozen_model_path);
+		model = new MultiContactPointModel();
+		model->init(frozen_model_path);
 	} else {
 		ROS_ERROR("Parameter frozen_model_path could not get loaded in terrain_model_uneven, check the launch file.");
 	}
@@ -246,7 +246,7 @@ bool TerrainModelUneven::update3DData(State& s) const
 	FootStateUneven footStand;
 	try{
 
-		UnevenTerrainStand unevenStand = UnevenTerrainStand(s, foot_size, terrain_model->getHeightGridMap(), footForm, myPred);
+		UnevenTerrainStand unevenStand = UnevenTerrainStand(s, foot_size, terrain_model->getHeightGridMap(), footForm, model);
 		footStand = unevenStand.getStand();
 		std::vector<double> n = footStand.getNormal();
 
