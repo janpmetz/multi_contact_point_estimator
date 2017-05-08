@@ -6,9 +6,12 @@
 
 class FootStateUneven {
 public:
-	FootStateUneven(){};
-	//FootStateUneven(int valid, std::vector<double> angles, std::vector<double> norm, std::vector<double> p1, std::vector<double> p2, std::vector<double> p3, std::vector<double> zmp, double facetArea, double support, double height, std::map<int, std::vector<double>> original_point_map);
-	//virtual ~FootStateUneven();
+	FootStateUneven(){
+		facetArea = 0.0;
+		height = 0.0;
+		support = 0.0;
+		valid = 0;
+	};
 
 	const std::vector<double>& getAngles() const {
 		return angles;

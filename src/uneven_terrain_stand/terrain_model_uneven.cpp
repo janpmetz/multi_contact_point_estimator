@@ -19,9 +19,18 @@ TerrainModelUneven::TerrainModelUneven(const std::string& name)
   : TerrainModelPlugin(name)
 {
 
-	// TODO load as ROS parameter in the node
-	myPred = new MyPredict();
-	myPred->init("../catkin_ws/src/multi_contact_point_estimator/src/uneven_terrain_stand/frozen_model_three_points.pb");
+	// Get the path of the frozen tensorflow model and load it
+	ros::NodeHandle nh;
+	std::string frozen_model_path;
+
+	if (ros::param::get("frozen_model_path", frozen_model_path)){
+		ROS_INFO_STREAM("Loading frozen model from: " << frozen_model_path);
+		myPred = new MyPredict();
+		myPred->init(frozen_model_path);
+	} else {
+		ROS_ERROR("Parameter frozen_model_path could not get loaded in terrain_model_uneven, check the launch file.");
+	}
+
 }
 
 bool TerrainModelUneven::initialize(const vigir_generic_params::ParameterSet& params)

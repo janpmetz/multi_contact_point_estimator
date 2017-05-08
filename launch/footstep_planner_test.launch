@@ -39,8 +39,8 @@
   <!-- PLUGIN SETS -->
   <rosparam file="$(find multi_contact_point_estimator)/config/default_plugin_sets.yaml" command="load"/>
 
-
-
+	<!-- MODEL PATH -->
+	<param name="frozen_model_path" value="$(find multi_contact_point_estimator)/models/frozen_model_three_points.pb" />
 
     <!-- start footstep planner -->
     <node name="footstep_planner" pkg="vigir_footstep_planner" type="footstep_planner_node" respawn="true" output="screen">
