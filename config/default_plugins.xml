@@ -1,0 +1,10 @@
+<library path="lib/libmulti_contact_point_estimator">
+
+  <!-- TerrainModelPlugin -->
+  <class type="vigir_footstep_planning::TerrainModelUneven" base_class_type="vigir_footstep_planning::TerrainModelPlugin">
+    <description>
+      TerrainModel: Provides terrain model plugin based on vigir_terrain_classifier
+    </description>
+  </class>
+  
+</library>

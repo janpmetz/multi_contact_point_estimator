@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <arg name="namespace" default="vigir/footstep_planning" />
+  <group ns="$(arg namespace)">
+  
+    <!-- run map servers -->
+    <node name="map_server_1" pkg="map_server" type="map_server" args="$(find vigir_footstep_planner)/maps/RCGO2011_Hector_Mission4_2.yaml">
+      <param name="frame_id" value="/world" />
+      <remap from="map" to="/body_level_grid_map" />
+    </node>
+
+    <node name="map_server_2" pkg="map_server" type="map_server" args="$(find vigir_footstep_planner)/maps/RCGO2011_Hector_Mission4_2.yaml">
+      <param name="frame_id" value="/world" />
+      <remap from="map" to="/ground_level_grid_map" />
+    </node>
+
+
+
+
+  <include file="$(find vigir_feet_pose_generator)/launch/feet_pose_generator.launch" />
+  <include file="$(find vigir_foot_pose_transformer)/launch/foot_pose_transformer.launch" />
+  <include file="$(find vigir_footstep_planning_lib)/launch/footstep_planning_vis.launch" />
+
+
+  
+  <!-- PLUGIN DESCRIPTIONS-->
+
+  <!-- MY PLUGIN TERRAIN_MODEL_UNEVEN -->
+  <rosparam file="$(find multi_contact_point_estimator)/config/plugin_descriptions.yaml" command="load"/>
+    
+  <!-- THE DEFAULTS; INCLUDING ORIGINAL TERRAIN_MODEL -->
+  <rosparam file="$(find vigir_footstep_planning_default_plugins)/config/plugin_descriptions.yaml" command="load"/>
+  
+  <!-- THE TWO OTHER-->
+  <rosparam file="$(find vigir_footstep_planning_plugins)/config/plugin_descriptions.yaml" command="load"/>
+
+  <!-- PLUGIN SETS -->
+  <rosparam file="$(find multi_contact_point_estimator)/config/default_plugin_sets.yaml" command="load"/>
+
+
+
+
+    <!-- start footstep planner -->
+    <node name="footstep_planner" pkg="vigir_footstep_planner" type="footstep_planner_node" respawn="true" output="screen">
+      <remap from="body_level_grid_map" to="ground_level_grid_map" />
+    </node>
+
+    <!-- specify where to load robot specific parameters -->
+    <rosparam file="$(find vigir_footstep_planner)/config/robot_params.yaml" command="load" />
+    <param name="params_path" value="$(find vigir_footstep_planner)/config/planner/" />
+    <param name="default_params" value="default" />
+  </group>
+</launch>
