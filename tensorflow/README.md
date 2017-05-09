@@ -1,5 +1,6 @@
 The library "lib_multi_contact_point_model.so"
 is a library to load a tensorflow model file, hold it in a session and make predictions using the tensorflow core.
+(See here how to build the shared library https://github.com/janpmetz/foot_pose_estimator/tree/master/cpp_tensorflow_run_model_lib)
 
 The model "frozen_model_three_points.pb":
 is a model file that holds the learned weights and the computation graph of the neural network.
