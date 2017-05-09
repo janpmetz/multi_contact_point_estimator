@@ -1,4 +1,5 @@
 # multi_contact_point_estimator
 
+
 Launch with:
 roslaunch multi_contact_point_estimator footstep_planner_test.launch

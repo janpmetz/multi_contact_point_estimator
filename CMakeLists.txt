@@ -205,7 +205,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${boost_LIBRARIES} ${PROJECT_SOURCE_DIR}/tensorflow/lib/lib_multi_contact_point_model.so)
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${boost_LIBRARIES} ${PROJECT_SOURCE_DIR}/tensorflow/lib/lib_multi_contact_point_model.so ${PROJECT_SOURCE_DIR}/qhull/libqhull_r.so.7.2.0)
 
 #############
 ## Install ##
