@@ -19,16 +19,26 @@ TerrainModelUneven::TerrainModelUneven(const std::string& name)
   : TerrainModelPlugin(name)
 {
 
-	// Get the path of the frozen tensorflow model and load it
+	// Read configuration parameters from the launch file
 	ros::NodeHandle nh;
+	bool use_tensorflow_model;
 	std::string frozen_model_path;
 
-	if (ros::param::get("frozen_model_path", frozen_model_path)){
-		ROS_INFO_STREAM("Loading frozen model from: " << frozen_model_path);
-		model = new MultiContactPointModel();
-		model->init(frozen_model_path);
+	// Use the convex hull algorithm or the tensorflow prediction?
+	if (ros::param::get("use_tensorflow_model", use_tensorflow_model)){
+		ROS_INFO_STREAM("[MULTI_CP] Parameter use_tensorflow_model: " << use_tensorflow_model);
 	} else {
-		ROS_ERROR("Parameter frozen_model_path could not get loaded in terrain_model_uneven, check the launch file.");
+		ROS_ERROR("[MULTI_CP] Parameter use_tensorflow_model could not get loaded in terrain_model_uneven, check the launch file.");
+	}
+
+	if(use_tensorflow_model) {
+		if (ros::param::get("frozen_model_path", frozen_model_path)){
+			ROS_INFO_STREAM("[MULTI_CP] Loading frozen model from: " << frozen_model_path);
+			model = new MultiContactPointModel();
+			model->init(frozen_model_path);
+		} else {
+			ROS_ERROR("[MULTI_CP] Parameter frozen_model_path could not get loaded in terrain_model_uneven, check the launch file.");
+		}
 	}
 
 }
@@ -246,7 +256,7 @@ bool TerrainModelUneven::update3DData(State& s) const
 	FootStateUneven footStand;
 	try{
 
-		UnevenTerrainStand unevenStand = UnevenTerrainStand(s, foot_size, terrain_model->getHeightGridMap(), footForm, model);
+		UnevenTerrainStand unevenStand = UnevenTerrainStand(s, foot_size, terrain_model->getHeightGridMap(), footForm, model, use_tensorflow_model);
 		footStand = unevenStand.getStand();
 		std::vector<double> n = footStand.getNormal();
 
@@ -255,22 +265,22 @@ bool TerrainModelUneven::update3DData(State& s) const
 		s.setNormal(n[0], n[1], n[2]);
 		//s.setZ(footStand.height);
 
+
+		if(footStand.getValid() != 1) {
+			result = false;
+		}
+
+		// make sure that the pose does not contain NANs
+		tf::Vector3 orig = s.getPose().getOrigin();
+		for(int i = 0; i < 4; i++) {
+		  if(std::isnan(orig.m_floats[i])) {
+			  result = false;
+		  }
+		}
+
 	}catch(std::exception const & ex){
 		// TODO might throw exception if ill formed stand is calculated (bad point set to calculate hull)
-		//ROS_INFO("Bad stand.");
 		result = false;
-	}
-
-	if(footStand.getValid() != 1) {
-		result = false;
-	}
-
-	// make sure that the pose does not contain NANs
-	tf::Vector3 orig = s.getPose().getOrigin();
-	for(int i = 0; i < 4; i++) {
-	  if(std::isnan(orig.m_floats[i])) {
-		  result = false;
-	  }
 	}
 
 	return result;

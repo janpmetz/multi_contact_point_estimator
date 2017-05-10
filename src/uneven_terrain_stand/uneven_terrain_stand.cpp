@@ -9,8 +9,8 @@
 
 using namespace orgQhull;
 
-UnevenTerrainStand::UnevenTerrainStand(vigir_footstep_planning::State s, geometry_msgs::Vector3 foot_size, vigir_terrain_classifier::HeightGridMap::Ptr height_grid_map, FootForm ff, MultiContactPointModel* const &model)
-: foot_size(foot_size), height_grid_map(height_grid_map), ff(ff), model(model)
+UnevenTerrainStand::UnevenTerrainStand(vigir_footstep_planning::State s, geometry_msgs::Vector3 foot_size, vigir_terrain_classifier::HeightGridMap::Ptr height_grid_map, FootForm ff, MultiContactPointModel* const &model, bool use_tensorflow_model)
+: foot_size(foot_size), height_grid_map(height_grid_map), ff(ff), model(model), use_tensorflow_model(use_tensorflow_model)
 {
 	x = s.getX();
 	y = s.getY();
@@ -108,20 +108,20 @@ void UnevenTerrainStand::get_points_under_foot(std::vector<orgQhull::vec3> &poin
 			}
 		}
 	}
-
 }
 
 FootStateUneven UnevenTerrainStand::predictStand(std::vector<orgQhull::vec3> const &points, std::vector<double> zmp) {
 
 	orgQhull::vec3 zmpv(zmp[0], zmp[1], zmp[2]);
 
-	// Ground Truth or Prediction:
-	ConvexHullStand hullStand = ConvexHullStand();
-	FootStateUneven s = hullStand.getStand(points, zmpv);
-
-	// TF prediction
-	//ModelStand modelStand = ModelStand();
-	//FootStateUneven s = modelStand.tensorflow_predict(points, zmpv, sampling_steps_x, sampling_steps_y, myPred, yaw, height_grid_map, ff);
+	FootStateUneven s;
+	if(use_tensorflow_model) {
+		ModelStand modelStand = ModelStand();
+		s = modelStand.tensorflow_predict(points, zmpv, sampling_steps_x, sampling_steps_y, model, yaw, height_grid_map, ff);
+	} else {
+		ConvexHullStand hullStand = ConvexHullStand();
+		s = hullStand.getStand(points, zmpv);
+	}
 
 	if(s.getValid() != 1){
 		return s;

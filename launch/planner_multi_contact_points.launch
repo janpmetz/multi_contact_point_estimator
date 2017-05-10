@@ -16,31 +16,36 @@
       <remap from="map" to="/ground_level_grid_map" />
     </node>
 
+	<include file="$(find vigir_feet_pose_generator)/launch/feet_pose_generator.launch" />
+	<include file="$(find vigir_foot_pose_transformer)/launch/foot_pose_transformer.launch" />
+	<include file="$(find vigir_footstep_planning_lib)/launch/footstep_planning_vis.launch" />
 
 
 
-  <include file="$(find vigir_feet_pose_generator)/launch/feet_pose_generator.launch" />
-  <include file="$(find vigir_foot_pose_transformer)/launch/foot_pose_transformer.launch" />
-  <include file="$(find vigir_footstep_planning_lib)/launch/footstep_planning_vis.launch" />
-
+	<!-- CONFIGURATION -->
+  
+	<!-- USE TENSORFLOW MODEL OR CONVEX HULL ALGORITHM -->
+	<param name="use_tensorflow_model" value="false" type="bool" />
+  
+	<!-- MODEL PATH -->
+	<param name="frozen_model_path" value="$(find multi_contact_point_estimator)/tensorflow/models/frozen_model_three_points.pb" />
 
   
-  <!-- PLUGIN DESCRIPTIONS-->
+  
+	<!-- PLUGIN DESCRIPTIONS-->
 
-  <!-- MY PLUGIN TERRAIN_MODEL_UNEVEN -->
-  <rosparam file="$(find multi_contact_point_estimator)/config/plugin_descriptions.yaml" command="load"/>
+	<!-- MY PLUGIN TERRAIN_MODEL_UNEVEN -->
+	<rosparam file="$(find multi_contact_point_estimator)/config/plugin_descriptions.yaml" command="load"/>
     
-  <!-- THE DEFAULTS; INCLUDING ORIGINAL TERRAIN_MODEL -->
-  <rosparam file="$(find vigir_footstep_planning_default_plugins)/config/plugin_descriptions.yaml" command="load"/>
+	<!-- THE DEFAULTS; INCLUDING ORIGINAL TERRAIN_MODEL -->
+	<rosparam file="$(find vigir_footstep_planning_default_plugins)/config/plugin_descriptions.yaml" command="load"/>
   
-  <!-- THE TWO OTHER-->
-  <rosparam file="$(find vigir_footstep_planning_plugins)/config/plugin_descriptions.yaml" command="load"/>
+	<!-- THE TWO OTHER-->
+	<rosparam file="$(find vigir_footstep_planning_plugins)/config/plugin_descriptions.yaml" command="load"/>
 
-  <!-- PLUGIN SETS -->
-  <rosparam file="$(find multi_contact_point_estimator)/config/default_plugin_sets.yaml" command="load"/>
+	<!-- PLUGIN SETS -->
+	<rosparam file="$(find multi_contact_point_estimator)/config/default_plugin_sets.yaml" command="load"/>
 
-  <!-- MODEL PATH -->
-  <param name="frozen_model_path" value="$(find multi_contact_point_estimator)/tensorflow/models/frozen_model_three_points.pb" />
 
 
 	<!-- start footstep planner -->

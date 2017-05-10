@@ -79,6 +79,9 @@ public:
   typedef boost::shared_ptr<TerrainModelUneven> Ptr;
   typedef boost::shared_ptr<TerrainModelUneven> ConstPtr;
 
+  bool use_tensorflow_model = false; // default false
+
+
 protected:
   bool getFootContactSupport(const tf::Pose& p, double &support, unsigned int sampling_steps_x, unsigned int sampling_steps_y, pcl::PointCloud<pcl::PointXYZI>::Ptr checked_positions = pcl::PointCloud<pcl::PointXYZI>::Ptr()) const;
 

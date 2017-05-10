@@ -50,7 +50,7 @@ bool FootForm::isInFoot(int x, int y, int width, int height) {
 	int idx_y = floor(y*heightFactor);
 
 	if(idx_x >= shapeHeight || idx_x < 0 || idx_y >= shapeWidth || idx_y < 0) {
-		ROS_ERROR("Index is out of bounds of Foot Shape array");
+		ROS_ERROR("[MULTI_CP] Index is out of bounds of Foot Shape array");
 		return false;
 	}
 

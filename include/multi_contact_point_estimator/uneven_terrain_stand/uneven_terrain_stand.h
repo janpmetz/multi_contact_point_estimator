@@ -21,7 +21,7 @@
 
 class UnevenTerrainStand {
 public:
-	UnevenTerrainStand(vigir_footstep_planning::State s, geometry_msgs::Vector3 foot_size, vigir_terrain_classifier::HeightGridMap::Ptr height_grid_map, FootForm ff, MultiContactPointModel* const &model);
+	UnevenTerrainStand(vigir_footstep_planning::State s, geometry_msgs::Vector3 foot_size, vigir_terrain_classifier::HeightGridMap::Ptr height_grid_map, FootForm ff, MultiContactPointModel* const &model, bool use_tensorflow_model);
 	virtual ~UnevenTerrainStand();
 	FootStateUneven getStand();
 
@@ -36,6 +36,7 @@ private:
 	int sampling_steps_y = 10;
 	vigir_terrain_classifier::HeightGridMap::Ptr height_grid_map;
 	MultiContactPointModel* const &model;
+	bool use_tensorflow_model;
 
 	// methods
 	void get_points_under_foot(std::vector<orgQhull::vec3> &points);
