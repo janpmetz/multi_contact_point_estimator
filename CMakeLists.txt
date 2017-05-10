@@ -104,7 +104,7 @@ if(NOT EXISTS "${QHULL_SOURCE_DIR}/libqhull")
 	     STATUS SHOW_PROGRESS
 	     EXPECTED_MD5 e6270733a826a6a7c32b796e005ec3dc
 	)
-	execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ${CMAKE_CURRENT_BINARY_DIR}/${QHULL_FILENAME}) # does not work:  -C ${PROJECT_SOURCE_DIR}/qhull --strip 1 qhull-2015.2/src/
+	execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ${CMAKE_CURRENT_BINARY_DIR}/${QHULL_FILENAME})
 	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory qhull-2015.2/src/ ${QHULL_SOURCE_DIR})
 endif()
 

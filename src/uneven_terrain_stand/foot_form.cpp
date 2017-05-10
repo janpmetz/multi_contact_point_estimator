@@ -9,6 +9,7 @@
 
 #include <cmath>
 
+// TODO: load foot form from file
 FootForm::FootForm()
 : foot{	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -32,11 +33,10 @@ FootForm::FootForm()
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 }
 {
-	// oh good its ugly
 }
 
 FootForm::~FootForm() {
-	// TODO Auto-generated destructor stubf
+	// TODO Auto-generated destructor stub
 }
 
 
