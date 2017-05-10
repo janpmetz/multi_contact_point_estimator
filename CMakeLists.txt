@@ -88,113 +88,137 @@ catkin_package(
 #  DEPENDS system_lib
 )
 
+
+
+
+###########
+## Get External Project ##
+###########
+
+# We need the qhull source for our convex hull algorithm 
+set(QHULL_SOURCE_DIR "${PROJECT_SOURCE_DIR}/qhull")
+if(NOT EXISTS "${QHULL_SOURCE_DIR}/libqhull")
+	set(QHULL_FILENAME "qhull-2015-src-7.2.0.tgz")
+	set(QHULL_URL "http://www.qhull.org/download/${QHULL_FILENAME}")
+	file(DOWNLOAD ${QHULL_URL} ${CMAKE_CURRENT_BINARY_DIR}/${QHULL_FILENAME}
+	     STATUS SHOW_PROGRESS
+	     EXPECTED_MD5 e6270733a826a6a7c32b796e005ec3dc
+	)
+	execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ${CMAKE_CURRENT_BINARY_DIR}/${QHULL_FILENAME}) # does not work:  -C ${PROJECT_SOURCE_DIR}/qhull --strip 1 qhull-2015.2/src/
+	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory qhull-2015.2/src/ ${QHULL_SOURCE_DIR})
+endif()
+
 ###########
 ## Build ##
 ###########
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(include ${catkin_INCLUDE_DIRS} ${boost_INCLUDE_DIRS})
+include_directories(include ${catkin_INCLUDE_DIRS} ${boost_INCLUDE_DIRS} ${QHULL_SOURCE_DIR})
 
 ## Specify additional locations of header files
 set(HEADERS
 	include/${PROJECT_NAME}/uneven_terrain_stand/convex_hull_stand.h
 	include/${PROJECT_NAME}/uneven_terrain_stand/model_stand.h
 	include/${PROJECT_NAME}/uneven_terrain_stand/terrain_model_uneven.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/data_points.h
 	include/${PROJECT_NAME}/uneven_terrain_stand/multi_contact_point_model_run_lib.h
 	include/${PROJECT_NAME}/uneven_terrain_stand/foot_form.h
 	include/${PROJECT_NAME}/uneven_terrain_stand/foot_state_uneven.h
 	include/${PROJECT_NAME}/uneven_terrain_stand/uneven_terrain_stand.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/libqhull_r.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/geom_r.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/io_r.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/mem_r.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/merge_r.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/poly_r.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/qhull_ra.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/qset_r.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/random_r.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/stat_r.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/user_r.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/mem_r.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/qset_r.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/Coordinates.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/functionObjects.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/PointCoordinates.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/Qhull.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullError.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullFacet.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullFacetList.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullFacetSet.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullHyperplane.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullIterator.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullLinkedList.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullPoint.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullPoints.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullPointSet.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullQh.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullRidge.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullSet.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullSets.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullStat.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullVertex.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullVertexSet.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/RboxPoints.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/RoadError.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/RoadLogEvent.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/qhulltest/RoadTest.h
+	include/${PROJECT_NAME}/uneven_terrain_stand/q_hull_extended.h
+	
 )
 
 set(SOURCES
 	src/uneven_terrain_stand/convex_hull_stand.cpp
 	src/uneven_terrain_stand/model_stand.cpp
 	src/uneven_terrain_stand/terrain_model_uneven.cpp
-	src/uneven_terrain_stand/data_points.cpp
 	src/uneven_terrain_stand/foot_form.cpp
 	src/uneven_terrain_stand/uneven_terrain_stand.cpp
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/global_r.c
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/stat_r.c
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/geom2_r.c
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/poly2_r.c
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/merge_r.c
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/libqhull_r.c
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/geom_r.c
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/poly_r.c
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/qset_r.c
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/mem_r.c
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/random_r.c
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/usermem_r.c
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/io_r.c
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/user_r.c
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/rboxlib_r.c
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/qset_r.c
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/mem_r.c
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhull_r/usermem_r.c
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/Coordinates.cpp
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/PointCoordinates.cpp
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/Qhull.cpp
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullFacet.cpp
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullFacetList.cpp
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullFacetSet.cpp
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullHyperplane.cpp
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullPoint.cpp
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullPointSet.cpp
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullPoints.cpp
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullQh.cpp
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullRidge.cpp
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullSet.cpp
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullStat.cpp
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullVertex.cpp
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/QhullVertexSet.cpp
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/RboxPoints.cpp
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/RoadError.cpp
-	include/${PROJECT_NAME}/uneven_terrain_stand/src/libqhullcpp/RoadLogEvent.cpp
+	src/uneven_terrain_stand/q_hull_extended.cpp
+)
+
+set(QHULL_SOURCE 
+	${QHULL_SOURCE_DIR}/libqhull_r/libqhull_r.h
+	${QHULL_SOURCE_DIR}/libqhull_r/geom_r.h
+	${QHULL_SOURCE_DIR}/libqhull_r/io_r.h
+	${QHULL_SOURCE_DIR}/libqhull_r/mem_r.h
+	${QHULL_SOURCE_DIR}/libqhull_r/merge_r.h
+	${QHULL_SOURCE_DIR}/libqhull_r/poly_r.h
+	${QHULL_SOURCE_DIR}/libqhull_r/qhull_ra.h
+	${QHULL_SOURCE_DIR}/libqhull_r/qset_r.h
+	${QHULL_SOURCE_DIR}/libqhull_r/random_r.h
+	${QHULL_SOURCE_DIR}/libqhull_r/stat_r.h
+	${QHULL_SOURCE_DIR}/libqhull_r/user_r.h
+	${QHULL_SOURCE_DIR}/libqhull_r/mem_r.h
+	${QHULL_SOURCE_DIR}/libqhull_r/qset_r.h
+	${QHULL_SOURCE_DIR}/libqhullcpp/Coordinates.h
+	${QHULL_SOURCE_DIR}/libqhullcpp/functionObjects.h
+	${QHULL_SOURCE_DIR}/libqhullcpp/PointCoordinates.h
+	${QHULL_SOURCE_DIR}/libqhullcpp/Qhull.h
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullError.h
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullFacet.h
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullFacetList.h
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullFacetSet.h
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullHyperplane.h
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullIterator.h
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullLinkedList.h
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullPoint.h
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullPoints.h
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullPointSet.h
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullQh.h
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullRidge.h
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullSet.h
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullSets.h
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullStat.h
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullVertex.h
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullVertexSet.h
+	${QHULL_SOURCE_DIR}/libqhullcpp/RboxPoints.h
+	${QHULL_SOURCE_DIR}/libqhullcpp/RoadError.h
+	${QHULL_SOURCE_DIR}/libqhullcpp/RoadLogEvent.h
+	${QHULL_SOURCE_DIR}/qhulltest/RoadTest.h
+	${QHULL_SOURCE_DIR}/libqhull_r/global_r.c
+	${QHULL_SOURCE_DIR}/libqhull_r/stat_r.c
+	${QHULL_SOURCE_DIR}/libqhull_r/geom2_r.c
+	${QHULL_SOURCE_DIR}/libqhull_r/poly2_r.c
+	${QHULL_SOURCE_DIR}/libqhull_r/merge_r.c
+	${QHULL_SOURCE_DIR}/libqhull_r/libqhull_r.c
+	${QHULL_SOURCE_DIR}/libqhull_r/geom_r.c
+	${QHULL_SOURCE_DIR}/libqhull_r/poly_r.c
+	${QHULL_SOURCE_DIR}/libqhull_r/qset_r.c
+	${QHULL_SOURCE_DIR}/libqhull_r/mem_r.c
+	${QHULL_SOURCE_DIR}/libqhull_r/random_r.c
+	${QHULL_SOURCE_DIR}/libqhull_r/usermem_r.c
+	${QHULL_SOURCE_DIR}/libqhull_r/io_r.c
+	${QHULL_SOURCE_DIR}/libqhull_r/user_r.c
+	${QHULL_SOURCE_DIR}/libqhull_r/rboxlib_r.c
+	${QHULL_SOURCE_DIR}/libqhull_r/qset_r.c
+	${QHULL_SOURCE_DIR}/libqhull_r/mem_r.c
+	${QHULL_SOURCE_DIR}/libqhull_r/usermem_r.c
+	${QHULL_SOURCE_DIR}/libqhullcpp/Coordinates.cpp
+	${QHULL_SOURCE_DIR}/libqhullcpp/PointCoordinates.cpp
+	${QHULL_SOURCE_DIR}/libqhullcpp/Qhull.cpp
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullFacet.cpp
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullFacetList.cpp
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullFacetSet.cpp
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullHyperplane.cpp
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullPoint.cpp
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullPointSet.cpp
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullPoints.cpp
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullQh.cpp
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullRidge.cpp
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullSet.cpp
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullStat.cpp
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullVertex.cpp
+	${QHULL_SOURCE_DIR}/libqhullcpp/QhullVertexSet.cpp
+	${QHULL_SOURCE_DIR}/libqhullcpp/RboxPoints.cpp
+	${QHULL_SOURCE_DIR}/libqhullcpp/RoadError.cpp
+	${QHULL_SOURCE_DIR}/libqhullcpp/RoadLogEvent.cpp
 )
 
 
 ## Declare a cpp library
-add_library(${PROJECT_NAME} ${SOURCES} ${HEADERS})
+add_library(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${QHULL_SOURCE})
 set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
 ## Declare a cpp executable
@@ -205,7 +229,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${boost_LIBRARIES} ${PROJECT_SOURCE_DIR}/tensorflow/lib/lib_multi_contact_point_model.so ${PROJECT_SOURCE_DIR}/qhull/libqhull_r.so.7.2.0)
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${boost_LIBRARIES} ${PROJECT_SOURCE_DIR}/tensorflow/lib/lib_multi_contact_point_model.so)
 
 #############
 ## Install ##

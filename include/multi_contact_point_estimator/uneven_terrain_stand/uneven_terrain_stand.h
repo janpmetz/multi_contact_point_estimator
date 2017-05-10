@@ -16,7 +16,7 @@
 #include "foot_form.h"
 #include "foot_state_uneven.h"
 #include "multi_contact_point_model_run_lib.h"
-#include "src/libqhullcpp/Qhull.h"
+#include "q_hull_extended.h"
 
 
 class UnevenTerrainStand {

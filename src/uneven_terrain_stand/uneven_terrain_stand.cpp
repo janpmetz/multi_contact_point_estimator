@@ -3,7 +3,6 @@
 #include <cmath>
 #include <locale>
 #include <multi_contact_point_estimator/uneven_terrain_stand/uneven_terrain_stand.h>
-#include <multi_contact_point_estimator/uneven_terrain_stand/data_points.h>
 #include <multi_contact_point_estimator/uneven_terrain_stand/convex_hull_stand.h>
 #include <multi_contact_point_estimator/uneven_terrain_stand/model_stand.h>
 

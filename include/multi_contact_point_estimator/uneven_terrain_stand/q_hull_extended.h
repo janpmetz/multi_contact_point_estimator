@@ -8,7 +8,12 @@
 #ifndef MULTI_CONTACT_POINT_ESTIMATOR_INCLUDE_MULTI_CONTACT_POINT_ESTIMATOR_UNEVEN_TERRAIN_STAND_Q_HULL_EXTENDED_H_
 #define MULTI_CONTACT_POINT_ESTIMATOR_INCLUDE_MULTI_CONTACT_POINT_ESTIMATOR_UNEVEN_TERRAIN_STAND_Q_HULL_EXTENDED_H_
 
-#include "Qhull.h" // see the README_QHULL, QHULL needs to be installed
+//#include "libqhullcpp/PointCoordinates.h"
+//#include "/home/jan/catkin_ws/build/multi_contact_point_estimator/qhull/src/qhull/src/libqhullcpp/PointCoordinates.h"
+
+#include "libqhullcpp/PointCoordinates.h"
+#include "libqhullcpp/Qhull.h" // see the README_QHULL, QHULL needs to be installed
+#include <vector>
 
 namespace orgQhull {
 

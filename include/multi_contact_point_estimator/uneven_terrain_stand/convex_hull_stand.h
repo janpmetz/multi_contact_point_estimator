@@ -9,7 +9,7 @@
 #define MULTI_CONTACT_POINT_ESTIMATOR_INCLUDE_MULTI_CONTACT_POINT_ESTIMATOR_UNEVEN_TERRAIN_STAND_CONVEX_HULL_STAND_H_
 
 #include "foot_state_uneven.h"
-#include "src/libqhullcpp/Qhull.h"
+#include "q_hull_extended.h"
 
 using namespace orgQhull;
 

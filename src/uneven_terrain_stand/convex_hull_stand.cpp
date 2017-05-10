@@ -6,16 +6,18 @@
  */
 
 #include <multi_contact_point_estimator/uneven_terrain_stand/convex_hull_stand.h>
+
 #include <vector>
 #include <math.h>
 #include <map>
 
-#include <libqhullcpp/QhullFacetList.h>
-#include <visualization_msgs/Marker.h>
 #include <vigir_footstep_planning_lib/math.h>
 
-#include <multi_contact_point_estimator/uneven_terrain_stand/src/libqhullcpp/Qhull.h>
-#include <multi_contact_point_estimator/uneven_terrain_stand/src/libqhullcpp/QhullVertexSet.h>
+#include "libqhullcpp/QhullFacet.h"
+#include "libqhullcpp/QhullFacetList.h"
+#include "libqhullcpp/QhullVertex.h"
+#include "libqhullcpp/QhullPoint.h"
+#include "libqhullcpp/QhullVertexSet.h"
 
 ConvexHullStand::ConvexHullStand() {
 	// TODO Auto-generated constructor stub
@@ -48,7 +50,7 @@ FootStateUneven ConvexHullStand::getStand(std::vector<vec3> const &points, vec3 
 		original_point_map[idx] = originalPoint.getStdVec();
 	}
 
-	Qhull qhull;
+	QhullExtended qhull;
 	qhull.runQhull3D(points, "Qt");
 
 	// for the final z height of the ZMP, the ZMP on the facet (support polygon) and the normal of that polygon.
@@ -82,9 +84,9 @@ FootStateUneven ConvexHullStand::getStand(std::vector<vec3> const &points, vec3 
 
         if(facetContainsZmp) {
 
-        	if (f.hyperplane().isValid()) {
+        	if (f.hyperplane().isValid()) { //isDefined() // if this shows an error, eclipse chooses the wrong source, but everything works fine with catkin_make
 				auto coord = f.hyperplane().coordinates();
-				double facetArea = f.facetArea();
+				double facetArea = f.facetArea(); //qhull.runId()
 				vec3 normal(coord[0], coord[1], coord[2]);
 				vec3 otherNormal = getTriangleNormal(triPoints.at(0), triPoints.at(1), triPoints.at(2));
 				//double offset = f.hyperplane().offset();
