@@ -4,5 +4,8 @@ To select either the convex hull algorithm or the tensorflow prediction change t
 
 During the build the qhull source is downloaded from qhull.org and included into the project. We need the qhull source for the convex hull algorithm. 
 
+A point cloud file with uneven terrain can be found here:
+https://github.com/janpmetz/foot_pose_estimator
+
 Launch with:
 roslaunch multi_contact_point_estimator footstep_planner_test.launch

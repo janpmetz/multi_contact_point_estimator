@@ -7,6 +7,9 @@
 
 #include <multi_contact_point_estimator/uneven_terrain_stand/convex_hull_stand.h>
 
+#include <iostream>
+#include <fstream>
+
 #include <vector>
 #include <math.h>
 #include <map>
@@ -60,6 +63,8 @@ FootStateUneven ConvexHullStand::getStand(std::vector<vec3> const &points, vec3 
 	FootStateUneven stand = FootStateUneven();
 	stand.setValid(-1);
 
+	double A, B, C, D; //plane coefficients
+
     QhullFacetList facets = qhull.facetList();
     for (QhullFacetList::iterator it = facets.begin(); it != facets.end(); ++it)
     {
@@ -92,8 +97,8 @@ FootStateUneven ConvexHullStand::getStand(std::vector<vec3> const &points, vec3 
 				//double offset = f.hyperplane().offset();
 				//facetsNormals.push_back(std::pair<vec3, double>(normal, offset));
 				//double n = f.hyperplane().norm();
-	    		double A = coord[0]; double B = coord[1]; double C = coord[2];
-	    		double D = -normal.dot(triPoints.at(0)); //-dot(normal,p1);
+	    		A = coord[0]; B = coord[1]; C = coord[2];
+	    		D = -normal.dot(triPoints.at(0)); //-dot(normal,p1);
 	    		double zmpHeight_onFacet = (A * zmpv.X[0] + B * zmpv.X[1] + D) / (-C); //(A.*x + B.*y + D)./(-C);
 
 	    		// select the highest facet
@@ -114,7 +119,7 @@ FootStateUneven ConvexHullStand::getStand(std::vector<vec3> const &points, vec3 
     }
 
 
-	stand.setOriginalPointMap(original_point_map);
+    stand.setOriginalPointMap(original_point_map);
 
     return stand;
 }

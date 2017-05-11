@@ -21,7 +21,6 @@ TerrainModelUneven::TerrainModelUneven(const std::string& name)
 
 	// Read configuration parameters from the launch file
 	ros::NodeHandle nh;
-	bool use_tensorflow_model;
 	std::string frozen_model_path;
 
 	// Use the convex hull algorithm or the tensorflow prediction?
