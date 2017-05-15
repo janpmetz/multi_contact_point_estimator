@@ -24,7 +24,7 @@ class MultiContactPointModel {
 		MultiContactPointModel();
 		virtual ~MultiContactPointModel();
 		void init(std::string modelPath); // takes a while bc loads the graph from a file
-		std::vector<float> make_prediction(std::vector<float> pointsFlat, std::vector<float> zmpvec, int dataWidth, int dataHeight);
+		std::vector<double> make_prediction(std::vector<double> pointsFlat, std::vector<double> zmpvec, int dataWidth, int dataHeight);
 		void close();
 
 	private:

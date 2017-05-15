@@ -25,8 +25,8 @@ FootStateUneven ModelStand::tensorflow_predict(std::vector<vec3> const &points, 
 	FootStateUneven stand = FootStateUneven();
 
 	// initializations
-	std::vector<float> zmpvec= {zmpv.X[0], zmpv.X[1]};
-	std::vector<float> pointsFlat(dataWidth*dataHeight, 0.0f);
+	std::vector<double> zmpvec= {zmpv.X[0], zmpv.X[1]};
+	std::vector<double> pointsFlat(dataWidth*dataHeight, 0.0f);
 	std::map<int, std::vector<double>> original_point_map;
 
 	// turn data to a flat vector with data scaled to [0,1] to feed it into the predicting model
@@ -35,7 +35,7 @@ FootStateUneven ModelStand::tensorflow_predict(std::vector<vec3> const &points, 
 	// PREDICT CONTACT POINTS
 	// ##################################################
 	// flat predict matrix dataWith x dataHeight containing most likely contact points
-	std::vector<float> pred = model->make_prediction(pointsFlat, zmpvec, dataWidth, dataHeight);
+	std::vector<double> pred = model->make_prediction(pointsFlat, zmpvec, dataWidth, dataHeight);
 	// ##################################################
 
 	// get 3 most likely predicted contact points from the map (that are within the foot shape)
@@ -85,7 +85,7 @@ FootStateUneven ModelStand::tensorflow_predict(std::vector<vec3> const &points, 
  * That are within the foot shape
  */
 std::vector<vec3> ModelStand::getMostLikelyPoints(
-		const std::vector<float>& pred, int dataWidth, FootForm ff,	int dataHeight,
+		const std::vector<double>& pred, int dataWidth, FootForm ff,	int dataHeight,
 		const vigir_terrain_classifier::HeightGridMap::Ptr& height_grid_map,
 		std::map<int, std::vector<double> >& original_point_map) {
 
@@ -146,7 +146,7 @@ void ModelStand::checkNormalUpwards(vec3& n, vec3& p1, vec3& p2, vec3& p3) {
 
 void ModelStand::flattenToScaledVector(const std::vector<vec3>& points,
 		int dataWidth, std::map<int, std::vector<double> >& original_point_map,
-		std::vector<float>& pointsFlat) {
+		std::vector<double>& pointsFlat) {
 
 	// turn data to a flat vector with data scaled to [0,1]
 	double max, min;

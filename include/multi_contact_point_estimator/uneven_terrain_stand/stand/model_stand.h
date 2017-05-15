@@ -23,10 +23,10 @@ private:
 	vec3 getTriangleNormal(vec3 a, vec3 b, vec3 c);
 	double triangle_area_3d(vec3 a, vec3 b, vec3 c);
 	void getMaxMinPoints(std::vector<vec3> const &points, double &max, double &min);
-	void flattenToScaledVector(const std::vector<vec3>& points, int dataWidth, std::map<int, std::vector<double> >& original_point_map,std::vector<float>& pointsFlat);
+	void flattenToScaledVector(const std::vector<vec3>& points, int dataWidth, std::map<int, std::vector<double> >& original_point_map,std::vector<double>& pointsFlat);
 	void checkNormalUpwards(orgQhull::vec3& n, orgQhull::vec3& p1, orgQhull::vec3& p2, orgQhull::vec3& p3);
 
-	std::vector<vec3> getMostLikelyPoints(const std::vector<float>& pred,
+	std::vector<vec3> getMostLikelyPoints(const std::vector<double>& pred,
 			int dataWidth, FootForm ff, int dataHeight,
 			const vigir_terrain_classifier::HeightGridMap::Ptr& height_grid_map,
 			std::map<int, std::vector<double> >& original_point_map);

@@ -45,8 +45,8 @@ FootStateUneven ConvexHullStand::getStand(std::vector<vec3> const &points, vec3 
 	int dataHeight=10;
 
 	// initializations
-	std::vector<float> zmpvec= {zmpv.X[0], zmpv.X[1]};
-	std::vector<float> pointsFlat(dataWidth*dataHeight, 0.0f);	// feed only a vector to QHull
+	std::vector<double> zmpvec= {zmpv.X[0], zmpv.X[1]};
+	std::vector<double> pointsFlat(dataWidth*dataHeight, 0.0f);	// feed only a vector to QHull
 	std::map<int, std::vector<double>> original_point_map;
 	flattenPoints(points, dataWidth, pointsFlat, original_point_map);	// flatten e.g. a 10x10 matrix -> vector of length 10*10
 
@@ -109,7 +109,7 @@ FootStateUneven ConvexHullStand::getStand(std::vector<vec3> const &points, vec3 
  */
 
 void ConvexHullStand::flattenPoints(const std::vector<vec3>& points, int dataWidth,
-		std::vector<float>& pointsFlat,
+		std::vector<double>& pointsFlat,
 		std::map<int, std::vector<double> >& original_point_map) {
 	// turn data to a flat vector
 	for (int i = 0; i < points.size(); i++) {
