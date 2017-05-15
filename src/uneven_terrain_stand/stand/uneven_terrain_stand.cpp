@@ -1,17 +1,18 @@
 #include <multi_contact_point_estimator/uneven_terrain_stand/stand/convex_hull_stand.h>
 #include <multi_contact_point_estimator/uneven_terrain_stand/stand/model_stand.h>
 #include <multi_contact_point_estimator/uneven_terrain_stand/stand/uneven_terrain_stand.h>
+#include <vigir_footstep_planning_lib/math.h>
 #include <thread>
 #include <chrono>
 #include <cmath>
 #include <locale>
-
 
 using namespace orgQhull;
 
 UnevenTerrainStand::UnevenTerrainStand(vigir_footstep_planning::State s, geometry_msgs::Vector3 foot_size, vigir_terrain_classifier::HeightGridMap::Ptr height_grid_map, FootForm ff, MultiContactPointModel* const &model, bool use_tensorflow_model)
 : foot_size(foot_size), height_grid_map(height_grid_map), ff(ff), model(model), use_tensorflow_model(use_tensorflow_model)
 {
+	leg = s.getLeg();
 	x = s.getX();
 	y = s.getY();
 	p = s.getPose();
@@ -80,7 +81,14 @@ void UnevenTerrainStand::get_points_under_foot(std::vector<orgQhull::vec3> &poin
 			double height = 0.0;
 			bool hasHeight = height_grid_map->getHeight(trans_pos.getX(), trans_pos.getY(), height);
 
-			bool isInFootShape = ff.isInFoot(x_idx, y_idx, sampling_steps_x, sampling_steps_y);
+			// TODO make mirrored foot shape prediction with tensorflow too (works only with convex hull algo right now)
+			bool isInFootShape;
+			if(use_tensorflow_model==false){
+				isInFootShape = ff.isInFoot(leg, x_idx, y_idx, sampling_steps_x, sampling_steps_y);
+			} else {
+				isInFootShape = ff.isInFoot(Leg::RIGHT, x_idx, y_idx, sampling_steps_x, sampling_steps_y);
+			}
+
 
 			if (isInFootShape && hasHeight)
 			{
@@ -103,7 +111,7 @@ FootStateUneven UnevenTerrainStand::predictStand(std::vector<orgQhull::vec3> con
 	if(use_tensorflow_model) {
 
 		ModelStand modelStand = ModelStand();
-		s = modelStand.tensorflow_predict(points, zmpv, sampling_steps_x, sampling_steps_y, model, yaw, height_grid_map, ff);
+		s = modelStand.tensorflow_predict(points, zmpv, sampling_steps_x, sampling_steps_y, model, yaw, height_grid_map, ff, leg);
 		setHeight(s, zmpv);
 
 	} else {

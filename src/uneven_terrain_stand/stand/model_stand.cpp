@@ -20,7 +20,7 @@ ModelStand::~ModelStand() {
 	// TODO Auto-generated destructor stub
 }
 
-FootStateUneven ModelStand::tensorflow_predict(std::vector<vec3> const &points, vec3 zmpv, int dataWidth, int dataHeight, MultiContactPointModel* const &model, double yaw, vigir_terrain_classifier::HeightGridMap::Ptr height_grid_map, FootForm ff){
+FootStateUneven ModelStand::tensorflow_predict(std::vector<vec3> const &points, vec3 zmpv, int dataWidth, int dataHeight, MultiContactPointModel* const &model, double yaw, vigir_terrain_classifier::HeightGridMap::Ptr height_grid_map, FootForm ff, Leg leg){
 
 	FootStateUneven stand = FootStateUneven();
 
@@ -107,7 +107,10 @@ std::vector<vec3> ModelStand::getMostLikelyPoints(
 		p.IDX[0] = floor(idx / dataWidth);
 		p.IDX[1] = idx % dataWidth;
 		// only if predicted contact point is really within the foot form then use the prediction
-		bool inFoot = ff.isInFoot(p.IDX[0], p.IDX[1], dataWidth, dataHeight);
+
+		bool inFoot = ff.isInFoot(Leg::RIGHT, p.IDX[0], p.IDX[1], dataWidth, dataHeight);
+		// #TODO USE LEG AS PARAM, look in foot_form.cpp how y is flipped
+
 		// if predicted point does not match a point under the sole continue
 		if (original_point == original_point_map.end()) {
 			continue;

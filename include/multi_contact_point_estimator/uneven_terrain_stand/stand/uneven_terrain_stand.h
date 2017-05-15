@@ -17,7 +17,7 @@
 #include <mutex>
 #include <iostream>
 
-
+using vigir_footstep_planning::Leg;
 
 class UnevenTerrainStand {
 public:
@@ -29,6 +29,7 @@ private:
 	double x;
 	double y;
 	double yaw;
+	Leg leg;
 	tf::Pose p; //const tf::Pose& p;
 	geometry_msgs::Vector3 foot_size;
 	FootForm ff;
