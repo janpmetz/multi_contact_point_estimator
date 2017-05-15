@@ -25,11 +25,6 @@ UnevenTerrainStand::~UnevenTerrainStand() {
 
 FootStateUneven UnevenTerrainStand::getStand() {
 
-	/*
-	// TIME MEASUREMENT, TODO remove later
-	auto start_time = std::chrono::high_resolution_clock::now(); // ERROR ONLY IN ECLIPSE, BUT IT BUILDS AND RUNS
-	*/
-
 	std::vector<orgQhull::vec3> points;
 	get_points_under_foot(points);
 
@@ -46,18 +41,6 @@ FootStateUneven UnevenTerrainStand::getStand() {
 	std::vector<double> zmp = {zmp_pos.getX(), zmp_pos.getY(), zmp_pos.getZ()};
 
 	FootStateUneven s = predictStand(points, zmp);
-
-	/*
-	//TIME MEASUREMENT, TODO remove later
-	// show time (shows error in eclipse but really compiles and runs)
-	auto end_time = std::chrono::high_resolution_clock::now(); // ERROR ONLY IN ECLIPSE, BUT IT BUILDS AND RUNS
-	auto time = end_time - start_time;
-	//ROS_INFO_STREAM("TIMING: " << std::chrono::duration_cast<std::chrono::microseconds>(time).count());
-
-	std::ofstream outfile;
-	outfile.open("/home/jan/Desktop/test.txt", std::ios_base::app);
-	outfile << std::chrono::duration_cast<std::chrono::microseconds>(time).count() << "\n"; // ERROR ONLY IN ECLIPSE, BUT IT BUILDS AND RUNS
-	*/
 
 	return s;
 
@@ -114,6 +97,8 @@ FootStateUneven UnevenTerrainStand::predictStand(std::vector<orgQhull::vec3> con
 
 	orgQhull::vec3 zmpv(zmp[0], zmp[1], zmp[2]);
 
+	double footScale = 0.1;	// TODO get from foot form
+
 	FootStateUneven s;
 	if(use_tensorflow_model) {
 		ModelStand modelStand = ModelStand();
@@ -123,14 +108,32 @@ FootStateUneven UnevenTerrainStand::predictStand(std::vector<orgQhull::vec3> con
 		s = hullStand.getStand(points, zmpv);
 	}
 
-	if(s.getValid() != 1){
+	if(s.getValid() != 1){ // if footStand is invalid, facet area is also invalid
 		return s;
 	}
 
-	double footScale = 0.3;	// TODO get from foot form
 	double maxFootArea = foot_size.x * foot_size.y * footScale; // foot form is smaller...
-	s.setSupport(s.getFacetArea() / maxFootArea);
+	s.setSupport(s.getFacetArea() / maxFootArea); // how much area of the foot is covered by the support polygon
 
 	return s;
 }
 
+
+
+
+/*
+// TIME MEASUREMENT, TODO remove later
+auto start_time = std::chrono::high_resolution_clock::now(); // ERROR ONLY IN ECLIPSE, BUT IT BUILDS AND RUNS
+*/
+
+/*
+//TIME MEASUREMENT, TODO remove later
+// show time (shows error in eclipse but really compiles and runs)
+auto end_time = std::chrono::high_resolution_clock::now(); // ERROR ONLY IN ECLIPSE, BUT IT BUILDS AND RUNS
+auto time = end_time - start_time;
+//ROS_INFO_STREAM("TIMING: " << std::chrono::duration_cast<std::chrono::microseconds>(time).count());
+
+std::ofstream outfile;
+outfile.open("/home/jan/Desktop/test.txt", std::ios_base::app);
+outfile << std::chrono::duration_cast<std::chrono::microseconds>(time).count() << "\n"; // ERROR ONLY IN ECLIPSE, BUT IT BUILDS AND RUNS
+*/

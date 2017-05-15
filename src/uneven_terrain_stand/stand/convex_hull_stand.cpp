@@ -21,6 +21,10 @@
 #include "libqhullcpp/QhullPoint.h"
 #include "libqhullcpp/QhullVertexSet.h"
 
+#include <ros/ros.h>
+#include <boost/lexical_cast.hpp>
+#include <boost/thread.hpp>
+
 ConvexHullStand::ConvexHullStand() {
 	// TODO Auto-generated constructor stub
 
@@ -29,98 +33,118 @@ ConvexHullStand::ConvexHullStand() {
 ConvexHullStand::~ConvexHullStand() {
 	// TODO Auto-generated destructor stub
 }
+
 /**
  * Use the qHull convex hull algorithm to get the foot stand
  */
 FootStateUneven ConvexHullStand::getStand(std::vector<vec3> const &points, vec3 zmpv) {
 
+	FootStateUneven stand;
+
 	int dataWidth=10;
 	int dataHeight=10;
 
+	// initializations
 	std::vector<float> zmpvec= {zmpv.X[0], zmpv.X[1]};
-	std::vector<float> pointsFlat(dataWidth*dataHeight, 0.0f);
-
+	std::vector<float> pointsFlat(dataWidth*dataHeight, 0.0f);	// feed only a vector to QHull
 	std::map<int, std::vector<double>> original_point_map;
+	flattenPoints(points, dataWidth, pointsFlat, original_point_map);	// flatten e.g. a 10x10 matrix -> vector of length 10*10
 
-	// turn data to a flat vector
-	for(int i = 0; i < points.size(); i++) {
-		long int idx =  (points.at(i).IDX[0]*dataWidth) + points.at(i).IDX[1];
-		double z = points.at(i).X[2];
-		//z = (z-min)/(max-min);
-		pointsFlat.at(idx) = z;
-		vec3 originalPoint = vec3(points.at(i).X[0], points.at(i).X[1], points.at(i).X[2]);
-		original_point_map[idx] = originalPoint.getStdVec();
-	}
 
+	// CALCULATE 3D CONVEX HULL
+	// QHull inheritance: make QHull 3D! accessible in C++
 	QhullExtended qhull;
 	qhull.runQhull3D(points, "Qt");
 
-	// for the final z height of the ZMP, the ZMP on the facet (support polygon) and the normal of that polygon.
-	double zmpFacetHeight = -DBL_MAX;
-	vec3 facetNormal;
-	//stand s;
-	FootStateUneven stand = FootStateUneven();
+	// Now get the one facet that is the support polygon:
+	double A, B, C, D;	//plane coefficients
+	double zmpFacetHeight = -DBL_MAX;	// height of the x,y coords of the ZMP (or COP) is a point on the support polygon
 	stand.setValid(-1);
 
-	double A, B, C, D; //plane coefficients
-
+	// Check all facets of the convex hull
     QhullFacetList facets = qhull.facetList();
     for (QhullFacetList::iterator it = facets.begin(); it != facets.end(); ++it)
     {
-    	std::vector<vec3> triPoints;
 
-        if (!(*it).isGood()) continue;
-        QhullFacet f = *it;
-        QhullVertexSet vSet = f.vertices();
-        // shows eclipse error but works
-        for (QhullVertexSet::iterator vIt = vSet.begin(); vIt != vSet.end(); ++vIt) // shows eclipse error but works
-        {
-            QhullVertex v = *vIt;
-            QhullPoint p = v.point();
-            double * coords = p.coordinates();
-            vec3 aPoint = vec3(coords[0], coords[1], coords[2]);
-            // ...Do what ever you want
-            triPoints.push_back(aPoint);
-            int madebugpoint=1;
-        }
+    	QhullFacet f = *it;
+        if (!f.isGood()) continue;
 
-        bool facetContainsZmp = pointInTriangle(zmpv, triPoints.at(0), triPoints.at(1), triPoints.at(2));
+        // get edge points of the facet (is a triangle)
+    	std::vector<vec3> edgePoints;
+		QhullVertexSet vSet = getFacetEdgePoints(f, edgePoints);
+        
+		bool facetContainsZmp = pointInTriangle(zmpv, edgePoints.at(0), edgePoints.at(1), edgePoints.at(2));
+        bool hyperPlaneValid = f.hyperplane().isValid();
 
-        if(facetContainsZmp) {
+        if(facetContainsZmp && hyperPlaneValid) {
 
-        	if (f.hyperplane().isValid()) { //isDefined() // if this shows an error, eclipse chooses the wrong source, but everything works fine with catkin_make
-				auto coord = f.hyperplane().coordinates();
-				double facetArea = f.facetArea(); //qhull.runId()
-				vec3 normal(coord[0], coord[1], coord[2]);
-				vec3 otherNormal = getTriangleNormal(triPoints.at(0), triPoints.at(1), triPoints.at(2));
-				//double offset = f.hyperplane().offset();
-				//facetsNormals.push_back(std::pair<vec3, double>(normal, offset));
-				//double n = f.hyperplane().norm();
-	    		A = coord[0]; B = coord[1]; C = coord[2];
-	    		D = -normal.dot(triPoints.at(0)); //-dot(normal,p1);
-	    		double zmpHeight_onFacet = (A * zmpv.X[0] + B * zmpv.X[1] + D) / (-C); //(A.*x + B.*y + D)./(-C);
+        		// get height of the cop on support polygon
+        		double* coord = f.hyperplane().coordinates();
+	    		double zmpHeight = pointHeightOnPlane(zmpv, edgePoints, coord);
 
-	    		// select the highest facet
-	    		if(zmpHeight_onFacet > zmpFacetHeight) {
-	    			zmpFacetHeight = zmpHeight_onFacet;
-	    			facetNormal = normal;
-	    			stand.setValid(1);
+	    		// store everything for the highest facet (bottom facet VS top facet in 3D)
+	    		if(zmpHeight > zmpFacetHeight) {
+	    			zmpFacetHeight = zmpHeight;
+					vec3 facetNormal(coord[0], coord[1], coord[2]);
 	    			stand.setNorm(facetNormal.getStdVec());
-	    			stand.setP1(triPoints.at(0).getStdVec());
-	    			stand.setP2(triPoints.at(1).getStdVec());
-	    			stand.setP3(triPoints.at(2).getStdVec());
-	    			stand.setFacetArea(facetArea);
+	    			stand.setP1(edgePoints.at(0).getStdVec());
+	    			stand.setP2(edgePoints.at(1).getStdVec());
+	    			stand.setP3(edgePoints.at(2).getStdVec());
+	    			stand.setFacetArea(f.facetArea());
 	    			stand.setHeight(zmpFacetHeight);
+	    			stand.setValid(1);
 	    		}
-        	}
-        }
 
+        }
     }
 
 
-    stand.setOriginalPointMap(original_point_map);
+    stand.setOriginalPointMap(original_point_map); // useful for e.g. later visualizations
 
     return stand;
+}
+
+/**
+ * Some helper functions
+ */
+
+void ConvexHullStand::flattenPoints(const std::vector<vec3>& points, int dataWidth,
+		std::vector<float>& pointsFlat,
+		std::map<int, std::vector<double> >& original_point_map) {
+	// turn data to a flat vector
+	for (int i = 0; i < points.size(); i++) {
+		long int idx = (points.at(i).IDX[0] * dataWidth) + points.at(i).IDX[1];
+		double z = points.at(i).X[2];
+		pointsFlat.at(idx) = z;
+		vec3 originalPoint = vec3(points.at(i).X[0], points.at(i).X[1],
+				points.at(i).X[2]);
+		original_point_map[idx] = originalPoint.getStdVec();
+	}
+}
+
+QhullVertexSet ConvexHullStand::getFacetEdgePoints(const QhullFacet& f,
+		std::vector<vec3>& triPoints) {
+	QhullVertexSet vSet = f.vertices();
+	for (QhullVertexSet::iterator vIt = vSet.begin(); vIt != vSet.end();
+			++vIt) {
+		// might show error in eclipse but works
+		QhullVertex v = *vIt;
+		QhullPoint p = v.point();
+		double* coords = p.coordinates();
+		vec3 aPoint = vec3(coords[0], coords[1], coords[2]);
+		triPoints.push_back(aPoint);
+	}
+	return vSet;
+}
+
+double ConvexHullStand::pointHeightOnPlane(const vec3& point, std::vector<vec3> edgePoints,	double* coord) {
+	double A = coord[0];
+	double B = coord[1];
+	double C = coord[2];
+	vec3 normal(coord[0], coord[1], coord[2]);
+	double D = -normal.dot(edgePoints.at(0)); //-dot(normal,p1);
+	double pointHeight = (A * point.X[0] + B * point.X[1] + D) / (-C); //(A.*x + B.*y + D)./(-C);
+	return pointHeight;
 }
 
 bool ConvexHullStand::pointInTriangle(vec3 p, vec3 p0, vec3 p1, vec3 p2) {

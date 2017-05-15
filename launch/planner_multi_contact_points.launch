@@ -9,7 +9,7 @@
 	<!-- CONFIGURATION -->
   
 	<!-- USE TENSORFLOW MODEL OR CONVEX HULL ALGORITHM -->
-	<param name="use_tensorflow_model" value="true" type="bool" />
+	<param name="use_tensorflow_model" value="false" type="bool" />
   
 	<!-- MODEL PATH -->
 	<param name="frozen_model_path" value="$(find multi_contact_point_estimator)/tensorflow/models/frozen_model_three_points.pb" />

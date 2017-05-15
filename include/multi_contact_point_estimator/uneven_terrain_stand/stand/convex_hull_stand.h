@@ -18,7 +18,12 @@ public:
 	ConvexHullStand();
 	virtual ~ConvexHullStand();
 	FootStateUneven getStand(std::vector<vec3> const &points, vec3 zmpv);
+
 private:
+	// helper functions
+	double pointHeightOnPlane(const vec3& point, std::vector<vec3> edgePoints,	double* coord);
+	QhullVertexSet getFacetEdgePoints(const QhullFacet& f,	std::vector<vec3>& triPoints);
+	void flattenPoints(const std::vector<vec3>& points, int dataWidth, std::vector<float>& pointsFlat, std::map<int, std::vector<double> >& original_point_map);
 	bool pointInTriangle(orgQhull::vec3 p, orgQhull::vec3 p0, orgQhull::vec3 p1, orgQhull::vec3 p2);
 	vec3 getTriangleNormal(vec3 a, vec3 b, vec3 c);
 };

@@ -263,20 +263,15 @@ FootStateUneven TerrainModelUneven::getFootStateUneven(State& s) const{
 
 		UnevenTerrainStand unevenStand = UnevenTerrainStand(s, foot_size, terrain_model->getHeightGridMap(), footForm, model, use_tensorflow_model);
 		footStand = unevenStand.getStand();
-		std::vector<double> n = footStand.getNormal();
 
-		//s.setFootStateUneven(footStand);			// store for later use, e.g. visualizations
-		s.setGroundContactSupport(footStand.getSupport());
-		s.setNormal(n[0], n[1], n[2]);
-
-		// get z
-		//s.setZ(footStand.height);
-		double z = s.getZ();
-		if (!getHeight(s.getX(), s.getY(), z)) {
-			footStand.setValid(-1);
-		} else {
-			s.setZ(z);
+		if(footStand.getValid() != 1){
+			return footStand;
 		}
+
+		std::vector<double> n = footStand.getNormal();
+		s.setNormal(n[0], n[1], n[2]);
+		s.setGroundContactSupport(footStand.getSupport());
+		s.setZ(footStand.getHeight());
 
 		// make sure that the pose does not contain NANs
 		tf::Vector3 orig = s.getPose().getOrigin();
@@ -287,7 +282,7 @@ FootStateUneven TerrainModelUneven::getFootStateUneven(State& s) const{
 		}
 
 
-	}catch(std::exception const & ex){
+	}catch(std::exception ex){
 		// The above code calls the ML model, depending on the system this might use your GPU with CUDA.
 		// If something goes wrong don't stop the whole planner, just try the next foot stand.
 
