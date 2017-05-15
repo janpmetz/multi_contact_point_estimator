@@ -5,10 +5,10 @@
  *      Author: jan
  */
 
-#include <multi_contact_point_estimator/uneven_terrain_stand/model_stand.h>
 #include <vigir_footstep_planning_lib/math.h>
 #include <vector>
 #include <math.h>
+#include <multi_contact_point_estimator/uneven_terrain_stand/stand/model_stand.h>
 #include <map>
 
 ModelStand::ModelStand() {

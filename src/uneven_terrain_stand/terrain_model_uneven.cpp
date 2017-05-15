@@ -9,8 +9,22 @@
 #include <vigir_terrain_classifier/terrain_model.h>
 
 #include <multi_contact_point_estimator/uneven_terrain_stand/terrain_model_uneven.h>
-#include <multi_contact_point_estimator/uneven_terrain_stand/uneven_terrain_stand.h>
-#include <multi_contact_point_estimator/uneven_terrain_stand/foot_state_uneven.h>
+#include <vigir_footstep_planning_msgs/Step.h>
+
+#include <boost/archive/binary_oarchive.hpp>
+#include "boost/archive/binary_iarchive.hpp"
+#include "boost/archive/binary_oarchive.hpp"
+#include "boost/iostreams/device/array.hpp"
+#include "boost/iostreams/device/back_inserter.hpp"
+#include "boost/iostreams/stream_buffer.hpp"
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/vector.hpp>
+#include <multi_contact_point_estimator/uneven_terrain_stand/foot/foot_state_uneven.h>
+#include <multi_contact_point_estimator/uneven_terrain_stand/stand/uneven_terrain_stand.h>
+
+using vigir_footstep_planning_msgs::Step;
+
+//#include <multi_contact_point_estimator/uneven_terrain_stand/state_extended.h>
 
 
 namespace vigir_footstep_planning
@@ -88,6 +102,8 @@ bool TerrainModelUneven::isAccessible(const State& s) const
 {
   return s.getGroundContactSupport() >= minimal_support;
 }
+
+
 
 bool TerrainModelUneven::isAccessible(const State& next, const State& /*current*/) const
 {
@@ -236,23 +252,13 @@ bool TerrainModelUneven::update3DData(geometry_msgs::Pose& p) const
 	return terrain_model->update3DData(p);
 }
 
-bool TerrainModelUneven::update3DData(State& s) const
-{
 
-	bool result = true;
+FootStateUneven TerrainModelUneven::getFootStateUneven(State& s) const{
 
-	// get z
-	double z = s.getZ();
-	if (!getHeight(s.getX(), s.getY(), z)) {
-		result = false;
-	} else {
-		s.setZ(z);
-	}
-
-	FootForm footForm = FootForm();
+	FootStateUneven footStand;
+	FootForm footForm = FootForm(); // TODO put in constructor
 
 	// calculate the foot stand (including the normal and support, contact points, point set, etc)
-	FootStateUneven footStand;
 	try{
 
 		UnevenTerrainStand unevenStand = UnevenTerrainStand(s, foot_size, terrain_model->getHeightGridMap(), footForm, model, use_tensorflow_model);
@@ -262,29 +268,55 @@ bool TerrainModelUneven::update3DData(State& s) const
 		//s.setFootStateUneven(footStand);			// store for later use, e.g. visualizations
 		s.setGroundContactSupport(footStand.getSupport());
 		s.setNormal(n[0], n[1], n[2]);
+
+		// get z
 		//s.setZ(footStand.height);
-
-
-		if(footStand.getValid() != 1) {
-			result = false;
+		double z = s.getZ();
+		if (!getHeight(s.getX(), s.getY(), z)) {
+			footStand.setValid(-1);
+		} else {
+			s.setZ(z);
 		}
 
 		// make sure that the pose does not contain NANs
 		tf::Vector3 orig = s.getPose().getOrigin();
 		for(int i = 0; i < 4; i++) {
 		  if(std::isnan(orig.m_floats[i])) {
-			  result = false;
+			  footStand.setValid(-1);
 		  }
 		}
 
+
 	}catch(std::exception const & ex){
-		// TODO might throw exception if ill formed stand is calculated (bad point set to calculate hull)
-		result = false;
+		// The above code calls the ML model, depending on the system this might use your GPU with CUDA.
+		// If something goes wrong don't stop the whole planner, just try the next foot stand.
+
+		footStand.setValid(-1);
+		ROS_ERROR("[MULTI_CP] EXCEPTION: %s", ex.what());
 	}
 
-	return result;
-}
+	return footStand;
 }
 
+
+bool TerrainModelUneven::update3DData(State& s) const
+{
+	FootStateUneven footStand = getFootStateUneven(s);
+	return footStand.getValid() == 1;
+}
+
+
+bool TerrainModelUneven::update3DData(Step& step) const {
+	State state(step);
+	FootStateUneven footStand = getFootStateUneven(state);
+	FootStateStruct footStepStruct = footStand.getFootStateStruct();
+
+	FootStateStruct::serialize_step_data(footStepStruct, step);
+
+	return footStand.getValid() == 1;
+}
+
+}// namespace
+
 #include <pluginlib/class_list_macros.h>
-PLUGINLIB_EXPORT_CLASS(vigir_footstep_planning::TerrainModelUneven, vigir_footstep_planning::TerrainModelPlugin)
+PLUGINLIB_EXPORT_CLASS(vigir_footstep_planning::TerrainModelUneven,vigir_footstep_planning::TerrainModelPlugin)

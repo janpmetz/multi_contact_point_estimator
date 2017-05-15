@@ -5,8 +5,7 @@
  *      Author: jan
  */
 
-#include <multi_contact_point_estimator/uneven_terrain_stand/foot_form.h>
-
+#include <multi_contact_point_estimator/uneven_terrain_stand/foot/foot_form.h>
 #include <cmath>
 
 // TODO: load foot form from file

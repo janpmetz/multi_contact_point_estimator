@@ -33,13 +33,18 @@
 
 	<include file="$(find vigir_feet_pose_generator)/launch/feet_pose_generator.launch" />
 	<include file="$(find vigir_foot_pose_transformer)/launch/foot_pose_transformer.launch" />
-	<include file="$(find vigir_footstep_planning_lib)/launch/footstep_planning_vis.launch" />
-
-
-	<!-- start footstep planner -->
-	<node name="footstep_planner" pkg="vigir_footstep_planner" type="footstep_planner_node" respawn="true" output="screen">
-	  <remap from="body_level_grid_map" to="ground_level_grid_map" />
+	
+	<!-- LAUNCH DERIVED VISUALIZATION NODE -->
+	<node name="footstep_planning_vis_uneven" pkg="multi_contact_point_estimator" type="footstep_planning_vis_node_uneven" respawn="true" output="screen" />
+	
+	<!-- LAUNCH DERIVED FOOTSTEP PLANNER -->
+	<node name="footstep_planner_uneven" pkg="multi_contact_point_estimator" type="footstep_planner_node_uneven" respawn="true" output="screen">
+		<remap from="body_level_grid_map" to="ground_level_grid_map" />
 	</node>
+	
+	<!-- LAUNCH RVIZ WITH OWN PARAMETERS (just small points instead of boxes, nothing important) -->
+	<node name="$(anon rviz)" pkg="rviz" type="rviz" args="-d $(find multi_contact_point_estimator)/config/rviz_footstep_planning.rviz" />
+	
 
     <!-- specify where to load robot specific parameters -->
     <rosparam file="$(find vigir_footstep_planner)/config/robot_params.yaml" command="load" />

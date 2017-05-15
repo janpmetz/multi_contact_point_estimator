@@ -2,6 +2,10 @@
 #define VIGIR_FOOTSTEP_PLANNING_CORE_VIGIR_FOOTSTEP_PLANNING_DEFAULT_PLUGINS_SRC_WORLD_MODEL_UNEVENTERRAINSTAND_H_
 
 #include <geometry_msgs/Vector3.h>
+#include <multi_contact_point_estimator/uneven_terrain_stand/foot/foot_form.h>
+#include <multi_contact_point_estimator/uneven_terrain_stand/foot/foot_state_uneven.h>
+#include <multi_contact_point_estimator/uneven_terrain_stand/utilities/multi_contact_point_model_run_lib.h>
+#include <multi_contact_point_estimator/uneven_terrain_stand/utilities/q_hull_extended.h>
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_cloud.h>
@@ -13,10 +17,6 @@
 #include <mutex>
 #include <iostream>
 
-#include "foot_form.h"
-#include "foot_state_uneven.h"
-#include "multi_contact_point_model_run_lib.h"
-#include "q_hull_extended.h"
 
 
 class UnevenTerrainStand {

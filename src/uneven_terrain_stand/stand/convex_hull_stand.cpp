@@ -5,13 +5,12 @@
  *      Author: jan
  */
 
-#include <multi_contact_point_estimator/uneven_terrain_stand/convex_hull_stand.h>
-
 #include <iostream>
 #include <fstream>
 
 #include <vector>
 #include <math.h>
+#include <multi_contact_point_estimator/uneven_terrain_stand/stand/convex_hull_stand.h>
 #include <map>
 
 #include <vigir_footstep_planning_lib/math.h>

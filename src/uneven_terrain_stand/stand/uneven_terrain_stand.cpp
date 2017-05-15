@@ -1,10 +1,10 @@
+#include <multi_contact_point_estimator/uneven_terrain_stand/stand/convex_hull_stand.h>
+#include <multi_contact_point_estimator/uneven_terrain_stand/stand/model_stand.h>
+#include <multi_contact_point_estimator/uneven_terrain_stand/stand/uneven_terrain_stand.h>
 #include <thread>
 #include <chrono>
 #include <cmath>
 #include <locale>
-#include <multi_contact_point_estimator/uneven_terrain_stand/uneven_terrain_stand.h>
-#include <multi_contact_point_estimator/uneven_terrain_stand/convex_hull_stand.h>
-#include <multi_contact_point_estimator/uneven_terrain_stand/model_stand.h>
 
 
 using namespace orgQhull;

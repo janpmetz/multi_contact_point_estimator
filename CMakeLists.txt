@@ -9,7 +9,7 @@ set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS roscpp actionlib_msgs actionlib std_msgs nav_msgs cv_bridge pcl_conversions vigir_generic_params vigir_pluginlib vigir_footstep_planning_msgs vigir_footstep_planning_lib vigir_footstep_planning_plugins vigir_terrain_classifier)
+find_package(catkin REQUIRED COMPONENTS roscpp actionlib_msgs actionlib std_msgs nav_msgs cv_bridge pcl_conversions vigir_generic_params vigir_pluginlib vigir_footstep_planning_msgs vigir_footstep_planning_lib vigir_footstep_planning_plugins vigir_terrain_classifier vigir_footstep_planner)
 
 ## System dependencies are found with CMake's conventions
 find_package(Boost REQUIRED COMPONENTS system)
@@ -83,8 +83,8 @@ find_package(PCL REQUIRED)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES multi_contactpoint_estimator
-  CATKIN_DEPENDS roscpp actionlib_msgs actionlib std_msgs nav_msgs cv_bridge pcl_conversions vigir_generic_params vigir_pluginlib vigir_footstep_planning_msgs vigir_footstep_planning_lib vigir_footstep_planning_plugins vigir_terrain_classifier
+  LIBRARIES multi_contact_point_estimator
+  CATKIN_DEPENDS roscpp actionlib_msgs actionlib std_msgs nav_msgs cv_bridge pcl_conversions vigir_generic_params vigir_pluginlib vigir_footstep_planning_msgs vigir_footstep_planning_lib vigir_footstep_planning_plugins vigir_terrain_classifier vigir_footstep_planner
 #  DEPENDS system_lib
 )
 
@@ -108,6 +108,9 @@ if(NOT EXISTS "${QHULL_SOURCE_DIR}/libqhull")
 	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory qhull-2015.2/src/ ${QHULL_SOURCE_DIR})
 endif()
 
+
+
+
 ###########
 ## Build ##
 ###########
@@ -118,25 +121,31 @@ include_directories(include ${catkin_INCLUDE_DIRS} ${boost_INCLUDE_DIRS} ${QHULL
 
 ## Specify additional locations of header files
 set(HEADERS
-	include/${PROJECT_NAME}/uneven_terrain_stand/convex_hull_stand.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/model_stand.h
+	include/${PROJECT_NAME}/uneven_terrain_stand/foot/foot_form.h
+	include/${PROJECT_NAME}/uneven_terrain_stand/foot/foot_state_uneven.h
+	include/${PROJECT_NAME}/uneven_terrain_stand/planner/footstep_planner_node_uneven.h
+	include/${PROJECT_NAME}/uneven_terrain_stand/stand/convex_hull_stand.h
+	include/${PROJECT_NAME}/uneven_terrain_stand/stand/model_stand.h
+	include/${PROJECT_NAME}/uneven_terrain_stand/stand/uneven_terrain_stand.h
+	include/${PROJECT_NAME}/uneven_terrain_stand/utilities/multi_contact_point_model_run_lib.h
+	include/${PROJECT_NAME}/uneven_terrain_stand/utilities/q_hull_extended.h
+	include/${PROJECT_NAME}/uneven_terrain_stand/visualization/footstep_planning_vis_node_uneven.h
+	include/${PROJECT_NAME}/uneven_terrain_stand/visualization/visualization_non_cvx_foot.h
 	include/${PROJECT_NAME}/uneven_terrain_stand/terrain_model_uneven.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/multi_contact_point_model_run_lib.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/foot_form.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/foot_state_uneven.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/uneven_terrain_stand.h
-	include/${PROJECT_NAME}/uneven_terrain_stand/q_hull_extended.h
-	
 )
 
 set(SOURCES
-	src/uneven_terrain_stand/convex_hull_stand.cpp
-	src/uneven_terrain_stand/model_stand.cpp
+	src/uneven_terrain_stand/foot/foot_form.cpp
+	src/uneven_terrain_stand/stand/convex_hull_stand.cpp
+	src/uneven_terrain_stand/stand/model_stand.cpp
+	src/uneven_terrain_stand/stand/uneven_terrain_stand.cpp
+	src/uneven_terrain_stand/utilities/q_hull_extended.cpp
+	src/uneven_terrain_stand/visualization/footstep_planning_vis_node_extract.cpp
 	src/uneven_terrain_stand/terrain_model_uneven.cpp
-	src/uneven_terrain_stand/foot_form.cpp
-	src/uneven_terrain_stand/uneven_terrain_stand.cpp
-	src/uneven_terrain_stand/q_hull_extended.cpp
 )
+# src/uneven_terrain_stand/planner/footstep_planner_node_uneven.cpp # contains main method
+# src/uneven_terrain_stand/visualization/footstep_planning_vis_node_uneven.cpp # contains main method
+
 
 set(QHULL_SOURCE 
 	${QHULL_SOURCE_DIR}/libqhull_r/libqhull_r.h
@@ -221,15 +230,21 @@ set(QHULL_SOURCE
 add_library(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${QHULL_SOURCE})
 set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
+
 ## Declare a cpp executable
-# add_executable(footstep_planning_plugins_node src/visualization/footstep_planning_plugins_node.cpp)
+add_executable(footstep_planning_vis_node_uneven src/uneven_terrain_stand/visualization/footstep_planning_vis_node_uneven.cpp)
+add_executable(footstep_planner_node_uneven src/uneven_terrain_stand/planner/footstep_planner_node_uneven.cpp)
+
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
 
+
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${boost_LIBRARIES} ${PROJECT_SOURCE_DIR}/tensorflow/lib/lib_multi_contact_point_model.so)
+target_link_libraries(footstep_planner_node_uneven ${PROJECT_NAME})
+target_link_libraries(footstep_planning_vis_node_uneven ${PROJECT_NAME})
 
 #############
 ## Install ##
@@ -246,7 +261,7 @@ target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${boost_LIBRARIES} ${P
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS ${PROJECT_NAME}
+install(TARGETS ${PROJECT_NAME} #footstep_planner_node_uneven footstep_planning_vis_node_uneven
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

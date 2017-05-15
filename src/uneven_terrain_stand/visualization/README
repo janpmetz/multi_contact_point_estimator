@@ -1,0 +1,2 @@
+The file footstep_planning_vis_node.cpp in the package from the base class contains a main method.
+But we need our own main method so we can not include this cpp file.

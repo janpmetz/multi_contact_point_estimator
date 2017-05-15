@@ -5,8 +5,8 @@
  *      Author: jan
  */
 
+#include <multi_contact_point_estimator/uneven_terrain_stand/utilities/q_hull_extended.h>
 #include <vector>
-#include <multi_contact_point_estimator/uneven_terrain_stand/q_hull_extended.h>
 
 
 namespace orgQhull {

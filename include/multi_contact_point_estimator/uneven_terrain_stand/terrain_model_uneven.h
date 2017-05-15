@@ -32,16 +32,18 @@
 #include <ros/ros.h>
 
 #include <boost/thread/mutex.hpp>
+#include <multi_contact_point_estimator/uneven_terrain_stand/foot/foot_state_uneven.h>
+#include <multi_contact_point_estimator/uneven_terrain_stand/utilities/multi_contact_point_model_run_lib.h>
 
 #include <pcl/point_cloud.h>
 
 #include <vigir_footstep_planning_lib/modeling/state.h>
+#include <vigir_footstep_planning_msgs/Step.h>
 
 #include <vigir_footstep_planning_plugins/plugins/terrain_model_plugin.h>
 
 #include <vigir_terrain_classifier/terrain_model.h>
 
-#include "multi_contact_point_model_run_lib.h"
 
 
 namespace vigir_footstep_planning
@@ -75,12 +77,15 @@ public:
   bool update3DData(geometry_msgs::Pose& p) const override;
   bool update3DData(State& s) const override;
 
+  // new in derived class
+  bool update3DData(vigir_footstep_planning_msgs::Step& step) const;
+  FootStateUneven getFootStateUneven(State& s) const;
+
   // typedefs
   typedef boost::shared_ptr<TerrainModelUneven> Ptr;
   typedef boost::shared_ptr<TerrainModelUneven> ConstPtr;
 
   bool use_tensorflow_model = false; // default false
-
 
 protected:
   bool getFootContactSupport(const tf::Pose& p, double &support, unsigned int sampling_steps_x, unsigned int sampling_steps_y, pcl::PointCloud<pcl::PointXYZI>::Ptr checked_positions = pcl::PointCloud<pcl::PointXYZI>::Ptr()) const;
