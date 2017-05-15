@@ -24,6 +24,8 @@ public:
 	virtual ~FootstepPlanningVisNodeUneven();
 
 	void stepPlanVisCallbackUneven(const msgs::StepPlanConstPtr& step_plan);
+protected:
+	ros::ServiceClient update_step_plan_client;
 };
 
 } /* namespace vigir_footstep_planning */
