@@ -43,6 +43,7 @@ private:
 	FootStateUneven predictStand(std::vector<orgQhull::vec3> const &points, std::vector<double> zmp);
 	double rad2deg(double rad);
 	bool pointInTriangle(orgQhull::vec3 p, orgQhull::vec3 p0, orgQhull::vec3 p1, orgQhull::vec3 p2);
+	void setHeight(FootStateUneven& s, orgQhull::vec3& zmp);
 };
 
 

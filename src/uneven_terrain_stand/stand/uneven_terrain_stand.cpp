@@ -101,9 +101,13 @@ FootStateUneven UnevenTerrainStand::predictStand(std::vector<orgQhull::vec3> con
 
 	FootStateUneven s;
 	if(use_tensorflow_model) {
+
 		ModelStand modelStand = ModelStand();
 		s = modelStand.tensorflow_predict(points, zmpv, sampling_steps_x, sampling_steps_y, model, yaw, height_grid_map, ff);
+		setHeight(s, zmpv);
+
 	} else {
+
 		ConvexHullStand hullStand = ConvexHullStand();
 		s = hullStand.getStand(points, zmpv);
 	}
@@ -118,7 +122,14 @@ FootStateUneven UnevenTerrainStand::predictStand(std::vector<orgQhull::vec3> con
 	return s;
 }
 
-
+void UnevenTerrainStand::setHeight(FootStateUneven& s, orgQhull::vec3& zmp) {
+	double height;
+	if (!height_grid_map->getHeight(zmp.X[0], zmp.X[1], height)) {
+		s.setValid(-1);
+	} else {
+		s.setHeight(height);
+	}
+}
 
 
 /*

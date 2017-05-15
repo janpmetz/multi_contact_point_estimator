@@ -12,7 +12,7 @@
 #include <multi_contact_point_estimator/uneven_terrain_stand/stand/uneven_terrain_stand.h>
 #include <multi_contact_point_estimator/uneven_terrain_stand/utilities/q_hull_extended.h>
 
-using namespace orgQhull;
+using namespace orgQhull;	// TODO maybe replace vec3 with other vector implementation
 
 class ModelStand {
 public:
@@ -22,6 +22,27 @@ public:
 private:
 	vec3 getTriangleNormal(vec3 a, vec3 b, vec3 c);
 	double triangle_area_3d(vec3 a, vec3 b, vec3 c);
+	void getMaxMinPoints(std::vector<vec3> const &points, double &max, double &min);
+	void flattenToScaledVector(const std::vector<vec3>& points, int dataWidth, std::map<int, std::vector<double> >& original_point_map,std::vector<float>& pointsFlat);
+	void checkNormalUpwards(orgQhull::vec3& n, orgQhull::vec3& p1, orgQhull::vec3& p2, orgQhull::vec3& p3);
+
+	std::vector<vec3> getMostLikelyPoints(const std::vector<float>& pred,
+			int dataWidth, FootForm ff, int dataHeight,
+			const vigir_terrain_classifier::HeightGridMap::Ptr& height_grid_map,
+			std::map<int, std::vector<double> >& original_point_map);
+
+	// Template helper method sorts in ascending order
+	template <typename T>
+	std::vector<size_t> indices_of_max_elements(std::vector<T> const& values) {
+	    std::vector<size_t> indices(values.size());
+	    std::iota(indices.begin(), indices.end(), 0); // shows eclipse error but compiles
+
+	    std::sort(
+	        indices.begin(), indices.end(),
+	        [&](size_t a, size_t b) { return values[a] < values[b]; }
+	    );
+	    return indices;
+	}
 
 };
 
