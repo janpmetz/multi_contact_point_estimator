@@ -10,4 +10,4 @@ A point cloud file with uneven terrain can be found here:
 https://github.com/janpmetz/foot_pose_estimator
 
 Launch with:
-roslaunch multi_contact_point_estimator footstep_planner_test.launch
+roslaunch multi_contact_point_estimator planner_multi_contact_points.launch
